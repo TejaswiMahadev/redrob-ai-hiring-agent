@@ -1,0 +1,17 @@
+# Large dataset — not committed (provided separately in the challenge bundle)
+India_runs_data_and_ai_challenge/candidates.jsonl
+India_runs_data_and_ai_challenge/candidates.jsonl.gz
+India_runs_data_and_ai_challenge/*.extracted.txt
+
+# Build artifacts / outputs
+*.csv
+!India_runs_data_and_ai_challenge/sample_submission.csv
+embeddings/
+*.npy
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env

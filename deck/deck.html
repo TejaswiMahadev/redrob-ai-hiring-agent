@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Redrob Candidate Ranking System</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#161d2e; --ink:#eaf0fb; --muted:#9fb0cc;
+    --accent:#5b9cff; --accent2:#22d3a7; --warn:#ff8a5b; --line:#28324a;
+    --good:#22d3a7; --bad:#ff6b6b;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#05080f; color:var(--ink);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .slide{
+    position:relative; width:13.333in; height:7.5in; padding:0.62in 0.75in;
+    background:linear-gradient(160deg,#0f1420 0%,#0b101b 60%,#0a0e17 100%);
+    page-break-after:always; overflow:hidden; display:flex; flex-direction:column;
+  }
+  .slide:last-child{page-break-after:auto}
+  .kicker{color:var(--accent); font-weight:700; letter-spacing:.14em;
+    text-transform:uppercase; font-size:12px; margin-bottom:10px}
+  h1{font-size:50px; line-height:1.05; letter-spacing:-.02em; font-weight:800}
+  h2{font-size:34px; line-height:1.08; letter-spacing:-.01em; font-weight:800; margin-bottom:6px}
+  .sub{color:var(--muted); font-size:17px; line-height:1.45; margin-top:10px; max-width:10in}
+  p,li{font-size:16.5px; line-height:1.5; color:var(--ink)}
+  .muted{color:var(--muted)}
+  .accent{color:var(--accent)} .accent2{color:var(--accent2)} .warn{color:var(--warn)}
+  .footer{position:absolute; bottom:.34in; left:.75in; right:.75in;
+    display:flex; justify-content:space-between; color:#5f6f8c; font-size:11px;
+    border-top:1px solid var(--line); padding-top:8px}
+  .grid{display:grid; gap:14px; margin-top:8px}
+  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr 1fr 1fr}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:16px 18px}
+  .card h3{font-size:16px; color:var(--accent); margin-bottom:7px; letter-spacing:.01em}
+  .card.warn h3{color:var(--warn)} .card.good h3{color:var(--accent2)}
+  .card p,.card li{font-size:14px; line-height:1.45; color:var(--muted)}
+  .card li{margin-left:16px; margin-bottom:3px}
+  .big{font-size:40px; font-weight:800; letter-spacing:-.02em}
+  .metric{font-size:34px; font-weight:800}
+  .center{flex:1; display:flex; flex-direction:column; justify-content:center}
+  ul{margin-left:20px} li{margin-bottom:7px}
+  .pill{display:inline-block; background:#1a2336; border:1px solid var(--line);
+    color:var(--muted); border-radius:999px; padding:3px 11px; font-size:12.5px; margin:3px 4px 0 0}
+  .flow{display:flex; align-items:stretch; gap:9px; margin-top:14px}
+  .step{flex:1; background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:13px; position:relative}
+  .step .n{font-size:11px; color:var(--accent); font-weight:700; letter-spacing:.1em}
+  .step h4{font-size:15px; margin:5px 0 5px; letter-spacing:-.01em}
+  .step p{font-size:12px; color:var(--muted); line-height:1.4}
+  .arrow{display:flex; align-items:center; color:#46577a; font-size:20px}
+  table{width:100%; border-collapse:collapse; margin-top:10px; font-size:14px}
+  th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line)}
+  th{color:var(--muted); font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.05em}
+  td.rank{color:var(--accent); font-weight:700}
+  .tag-good{color:var(--good); font-weight:700}
+  .tag-bad{color:var(--bad); font-weight:700}
+  .lead{font-size:20px; line-height:1.5; max-width:10.2in}
+  .lead b{color:var(--accent2)}
+  .codeline{font-family:ui-monospace,Menlo,Consolas,monospace; background:#0a0e17;
+    border:1px solid var(--line); border-radius:8px; padding:10px 13px; font-size:13.5px;
+    color:#bcd0f0; margin-top:10px}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px}
+</style>
+</head>
+<body>
+
+<!-- 1. TITLE -->
+<section class="slide">
+  <div class="center">
+    <div class="kicker">India Runs · Data &amp; AI Challenge</div>
+    <h1>Ranking candidates the way<br>a <span class="accent">great recruiter</span> would.</h1>
+    <p class="sub">An intelligent candidate-discovery system for the Redrob “Senior AI Engineer” role —
+    that reads the <b style="color:#eaf0fb">gap between what a profile says and what it means</b>,
+    instead of counting keywords.</p>
+    <div style="margin-top:26px">
+      <span class="pill">100,000 candidates → top 100</span>
+      <span class="pill">CPU-only · no network · ≤5 min</span>
+      <span class="pill">Pure Python · zero dependencies</span>
+    </div>
+  </div>
+  <div class="footer"><span>Redrob Candidate Ranking System</span><span>Approach &amp; Architecture</span></div>
+</section>
+
+<!-- 2. THE CHALLENGE -->
+<section class="slide">
+  <div class="kicker">The task</div>
+  <h2>Rank the best 100 of 100,000 — and prove you read the profiles</h2>
+  <div class="grid g3" style="margin-top:18px">
+    <div class="card"><h3>Input → Output</h3><p>One job description + 100K structured candidate profiles → a ranked top-100 CSV with a score and a written justification for every row.</p></div>
+    <div class="card"><h3>Scored on (hidden ground truth)</h3><p><b style="color:#eaf0fb">0.50·NDCG@10</b> + 0.30·NDCG@50 + 0.15·MAP + 0.05·P@10.<br>The top 10 is <span class="accent2">half the score.</span></p></div>
+    <div class="card warn"><h3>Hard constraints</h3><p>≤5 min wall-clock · ≤16 GB RAM · CPU-only · <b style="color:#ff8a5b">network OFF — no LLM/API calls during ranking.</b></p></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>And the dataset fights back</h3>
+    <p style="font-size:15px">It is deliberately seeded with traps: <b style="color:#eaf0fb">keyword stuffers</b> (off-domain people with perfect AI skill lists),
+    <b style="color:#eaf0fb">~80 honeypots</b> with impossible profiles (>10% in your top 100 = disqualified),
+    and <b style="color:#eaf0fb">stale “perfect-on-paper”</b> candidates who aren’t actually reachable.</p>
+  </div>
+  <div class="footer"><span>The challenge</span><span>02</span></div>
+</section>
+
+<!-- 3. THE REAL PROBLEM -->
+<section class="slide">
+  <div class="kicker">The insight that shaped everything</div>
+  <h2>This is a profile-reasoning problem, not a search problem</h2>
+  <div class="center" style="flex:0">
+    <p class="lead" style="margin-top:14px">The organizers say it outright: <i>“the right answer is <b>not</b> the candidate with the
+    most AI keywords — that’s a trap we built in.”</i> A single resume-vs-JD similarity score
+    <b>amplifies</b> every trap.</p>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card bad warn"><h3 style="color:#ff6b6b">What loses</h3>
+      <ul><li>Cosine / embedding similarity → ranks the keyword stuffers up</li>
+      <li>Skill-list matching → skills are pure noise (next slide)</li>
+      <li>An LLM per candidate → forbidden, and won’t fit 5 min on CPU</li></ul></div>
+    <div class="card good"><h3>What wins</h3>
+      <ul><li>Read the <b style="color:#eaf0fb">career history</b>: did they actually build ranking / retrieval / recsys in production?</li>
+      <li>Encode the JD’s real rubric as transparent, auditable rules</li>
+      <li>Weigh <b style="color:#eaf0fb">availability</b> — unreachable ≠ hireable</li></ul></div>
+  </div>
+  <div class="footer"><span>Reframing the problem</span><span>03</span></div>
+</section>
+
+<!-- 4. DATA FINDINGS -->
+<section class="slide">
+  <div class="kicker">Evidence → decisions</div>
+  <h2>We let the 100K profiles decide the architecture</h2>
+  <div class="grid g3" style="margin-top:16px">
+    <div class="card"><h3>Skills are noise</h3><p>Every skill appears on <b style="color:#eaf0fb">~12%</b> of candidates, near-uniform across a huge vocabulary. A Marketing Manager is as likely to list “Kafka” as an engineer.</p><p style="margin-top:8px" class="accent2">→ Never reward bare skill presence.</p></div>
+    <div class="card"><h3>No hidden “Tier-5” gems</h3><p>All <b style="color:#eaf0fb">98,821</b> non-ML-titled candidates have <b>zero</b> retrieval/ranking evidence in their career text.</p><p style="margin-top:8px" class="accent2">→ Embeddings add nothing. Dropped them — faster, simpler, trap-proof.</p></div>
+    <div class="card"><h3>Honeypots are impossible</h3><p>e.g. a skill used 92 months on a 3-year career; “expert” in 10 skills with 0 months; an 8-yr role spanning 16 months of dates.</p><p style="margin-top:8px" class="accent2">→ Catch them by numeric consistency, not by guessing.</p></div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Where the real signal lives</h3>
+    <p style="font-size:15px">Career <b style="color:#eaf0fb">descriptions</b> separate the real from the fake: genuine ML engineers describe ranking, retrieval, recommendation and search work; stuffers list AI skills but their role descriptions are about sales, accounting, or design.</p></div>
+  <div class="footer"><span>What the data told us</span><span>04</span></div>
+</section>
+
+<!-- 5. ARCHITECTURE -->
+<section class="slide">
+  <div class="kicker">Architecture</div>
+  <h2>A five-stage, fully transparent pipeline</h2>
+  <p class="sub" style="margin-top:6px">No LLM, no embeddings, no GPU in the ranking step — every score is explainable line by line.</p>
+  <div class="flow">
+    <div class="step"><div class="n">STAGE 0</div><h4>Normalize</h4><p>Parse 100K profiles; derive tenure, career text, skill grounding, summary-vs-profile YoE.</p></div>
+    <div class="step"><div class="n">STAGE 1</div><h4>Honeypot gate</h4><p>Force impossible profiles to tier 0 via numeric inconsistency.</p></div>
+    <div class="step"><div class="n">STAGE 2</div><h4>Role-fit gate</h4><p>Is this an AI/ML production engineer? Title × career × evidence.</p></div>
+    <div class="step"><div class="n">STAGE 3</div><h4>Multi-dim score</h4><p>Weighted JD rubric + disqualifier down-weights.</p></div>
+    <div class="step"><div class="n">STAGE 4</div><h4>Availability</h4><p>Multiplier from behavioral signals.</p></div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card good"><h3>Stage 5 — Rank &amp; explain</h3><p>Sort (score desc, id asc), take top 100, generate grounded per-candidate reasoning, emit validator-clean CSV.</p></div>
+    <div class="card"><h3>One config file</h3><p>Every weight, keyword family, disqualifier rule and threshold lives in <span style="font-family:monospace;color:#bcd0f0">redrob/rubric.py</span> — the recruiter’s mental model, encoded.</p></div>
+  </div>
+  <div class="footer"><span>System architecture</span><span>05</span></div>
+</section>
+
+<!-- 6. ROLE-FIT GATE -->
+<section class="slide">
+  <div class="kicker">The decisive trap defense · Stage 2</div>
+  <h2>Why the keyword stuffer collapses</h2>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card warn"><h3>Candidate: “Marketing Manager”</h3>
+      <p>Headline: <i>“AI enthusiast | Building with LLMs.”</i> Skills: RAG, Embeddings, Fine-tuning LLMs, LangChain.</p>
+      <p style="margin-top:8px">But every career stint is <b style="color:#ff8a5b">sales, brand design, accounting</b> — and the summary admits “taking online courses on RAG.”</p>
+      <p style="margin-top:10px" class="tag-bad">role_fit ≈ 0.05 → ranked #27 of 68, score 0.058</p></div>
+    <div class="card good"><h3>How the gate scores it</h3>
+      <p><b style="color:#eaf0fb">role_fit</b> = title trajectory × career ML-ness × production-evidence in descriptions.</p>
+      <p style="margin-top:8px">Skills never enter. An off-domain title with no ML career evidence cannot be rescued by any skill list.</p>
+      <p style="margin-top:8px">Guarded disqualifiers (so honest framing isn’t over-punished):</p>
+      <div><span class="pill">dabbler</span><span class="pill">pure-research</span><span class="pill">consulting-only</span><span class="pill">perception-only</span><span class="pill">title-chaser</span><span class="pill">big-tech-only</span></div></div>
+  </div>
+  <div class="footer"><span>Role-fit gate</span><span>06</span></div>
+</section>
+
+<!-- 7. SCORING + BEHAVIORAL -->
+<section class="slide">
+  <div class="kicker">Stages 3 &amp; 4</div>
+  <h2>Explainable dimensions, then an availability reality-check</h2>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Stage 3 — weighted fit (JD rubric)</h3>
+      <ul style="margin-top:2px">
+        <li>role-fit (34%) · production-evidence (24%)</li>
+        <li>experience band 5–9 yr (12%) · trajectory (10%)</li>
+        <li>domain NLP/IR match (10%) · location (10%)</li>
+      </ul>
+      <p style="margin-top:8px">Each dimension is in [0,1] and reported per candidate — the ranking is auditable, not asserted.</p></div>
+    <div class="card good"><h3>Stage 4 — availability multiplier</h3>
+      <p>The JD: <i>“perfect on paper but hasn’t logged in for 6 months with a 5% response rate is not actually available.”</i></p>
+      <p style="margin-top:8px">A multiplier (≈0.5–1.08) from response rate, recency, open-to-work, notice period, GitHub activity. It <b style="color:#eaf0fb">modulates</b> fit — it never manufactures it.</p>
+      <p style="margin-top:8px" class="accent2">Effect: a Microsoft NLP engineer with a 7% response rate and an 8-month-stale login drops out of the top 30.</p></div>
+  </div>
+  <div class="footer"><span>Scoring &amp; behavioral signals</span><span>07</span></div>
+</section>
+
+<!-- 8. RESULTS -->
+<section class="slide">
+  <div class="kicker">Results</div>
+  <h2>The shortlist — and the numbers behind it</h2>
+  <div style="display:flex; gap:18px; margin-top:10px">
+    <div style="flex:1.4">
+      <table>
+        <tr><th>#</th><th>Role @ Company</th><th>Yrs</th><th>Loc</th><th>Signals</th></tr>
+        <tr><td class="rank">1</td><td>Search Eng @ Sarvam AI</td><td>7.6</td><td>Gurgaon</td><td>resp 0.94 · active</td></tr>
+        <tr><td class="rank">2</td><td>RecSys Eng @ CRED</td><td>8.0</td><td>Noida</td><td>resp 0.77 · OTW</td></tr>
+        <tr><td class="rank">3</td><td>RecSys Eng @ Swiggy</td><td>6.0</td><td>Hyderabad</td><td>resp 0.91 · active</td></tr>
+        <tr><td class="rank">4</td><td>Staff MLE @ Paytm</td><td>7.0</td><td>Kochi</td><td>resp 0.95 · active</td></tr>
+        <tr><td class="rank">5</td><td>RecSys Eng @ Nykaa</td><td>7.7</td><td>Bangalore</td><td>resp 0.72 · active</td></tr>
+      </table>
+      <p class="muted" style="font-size:12.5px;margin-top:9px">Top-100 is 100% applied-ML/AI roles at product companies (AI/ML 29 · Fintech 8 · E-commerce 8 · …). Zero stuffers.</p>
+    </div>
+    <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; gap:12px; align-content:start">
+      <div class="card good" style="text-align:center"><div class="metric accent2">0</div><p>honeypots in top 100</p></div>
+      <div class="card" style="text-align:center"><div class="metric">~65s</div><p>full 100K run, CPU</p></div>
+      <div class="card" style="text-align:center"><div class="metric">1.8<span style="font-size:18px">GB</span></div><p>peak RAM (limit 16)</p></div>
+      <div class="card" style="text-align:center"><div class="metric">0</div><p>external dependencies</p></div>
+    </div>
+  </div>
+  <div class="footer"><span>Results</span><span>08</span></div>
+</section>
+
+<!-- 9. TRAP HANDLING PROOF -->
+<section class="slide">
+  <div class="kicker">Proof, not promise</div>
+  <h2>Every trap is demonstrably handled</h2>
+  <div class="grid g3" style="margin-top:16px">
+    <div class="card good"><h3>Honeypots</h3><p>All known impossible profiles forced to <b style="color:#eaf0fb">tier 0</b> (score −1.0). A self-test asserts <span class="tag-good">0% in the top 100</span> on every run — well under the 10% disqualification line.</p></div>
+    <div class="card good"><h3>Keyword stuffers</h3><p>The Marketing Manager with a perfect AI skill list lands at <b style="color:#eaf0fb">#27 / 0.058</b> — suppressed by the role-fit gate, not by a special case.</p></div>
+    <div class="card good"><h3>Stale &amp; off-target</h3><p>Unreachable candidates down-weighted; pure big-tech careers nudged toward the cutoff, per the JD’s preference for product/startup builders.</p></div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Built-in self-test</h3>
+    <p style="font-size:14.5px">Asserts: known honeypots flagged · known strong fits preserved · 0% honeypots in top 100 · score monotonic by rank · ties broken by candidate_id. Runs against the full pool.</p></div>
+  <div class="footer"><span>Trap handling</span><span>09</span></div>
+</section>
+
+<!-- 10. HONESTY / REPRODUCIBILITY -->
+<section class="slide">
+  <div class="kicker">Built to survive Stages 3–5</div>
+  <h2>Honest, reproducible, and defensible</h2>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>No fabricated anything</h3><p>No ground truth ships with the data, so we report methodology and ablations — never a made-up NDCG. No fake confidence scores. No hallucinated skills in any reasoning string.</p></div>
+    <div class="card"><h3>No LLM in the loop</h3><p>The ranking step makes zero network/API calls and uses no GPU. An LLM (Claude) was used only in <i>development</i> to analyze data and shape the rules — declared honestly.</p></div>
+    <div class="card good"><h3>Trivial reproduction</h3><p>Pure standard library — nothing to install, no version drift. One command regenerates the exact submission.</p>
+      <div class="codeline">python rank.py --candidates candidates.jsonl --out submission.csv</div></div>
+    <div class="card"><h3>Defensible by design</h3><p>Every decision traces to a line in <span style="font-family:monospace;color:#bcd0f0">rubric.py</span> and a fact in the data — ready to walk through in the engineering interview.</p></div>
+  </div>
+  <div class="footer"><span>Honesty &amp; reproducibility</span><span>10</span></div>
+</section>
+
+<!-- 11. CLOSING -->
+<section class="slide">
+  <div class="center">
+    <div class="kicker">Summary</div>
+    <h1 style="font-size:42px">Reasoning, not keyword-matching —<br><span class="accent2">fast, transparent, trap-proof.</span></h1>
+    <div class="grid g3" style="margin-top:26px">
+      <div class="card"><h3>Deliverables</h3><p>Runnable repo · top-100 CSV · this deck · live sandbox demo.</p></div>
+      <div class="card"><h3>Why it works</h3><p>Encodes the JD’s real rubric; reads careers, not keywords; respects every compute rule.</p></div>
+      <div class="card"><h3>What it proves</h3><p>0 honeypots, 0 stuffers, all-applied-ML top 100 — in 65 seconds on a CPU.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span>Redrob Candidate Ranking System</span><span>Thank you</span></div>
+</section>
+
+</body>
+</html>

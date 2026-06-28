@@ -1,0 +1,83 @@
+# Redrob Hackathon — Submission Metadata
+# Mirrors the portal metadata. Template: submission_metadata_template.yaml
+
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "TODO-your-team-name"            # TODO: fill in your registered team name
+
+primary_contact:
+  name: "TODO-Full Name"                     # TODO
+  email: "tejaswi.mahadev@vitainspire.com"
+  phone: "TODO-+91-XXXXXXXXXX"               # TODO
+
+team_members:
+  - name: "TODO-Full Name"                   # TODO
+    email: "tejaswi.mahadev@vitainspire.com"
+    role: "ML Engineer"
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "TODO-https://github.com/USERNAME/REPO"   # TODO: push the repo and paste URL
+sandbox_link: "TODO-https://huggingface.co/spaces/..."  # TODO: deploy a small-sample runner (see PRD §10)
+
+reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "Windows 11 laptop"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.13"
+  os: "Windows 11"
+  uses_gpu_for_inference: false              # ranker is CPU-only
+  has_network_during_ranking: false          # ranker makes no network calls
+  pre_computation_required: false            # no precomputed embeddings/indexes/models
+  pre_computation_time_minutes: 0
+
+# ============================================================================
+# AI tools declaration (transparency only; declared use is not penalized)
+# ============================================================================
+ai_tools_used:
+  - "Claude"
+
+ai_usage_summary: |
+  Used Claude (Claude Code) for architecture discussion, dataset exploration,
+  and code authoring/iteration during development. All design decisions were
+  driven by direct analysis of the released dataset and JD. No candidate data is
+  sent to any LLM at ranking time — the ranking step (rank.py) is pure standard
+  library, CPU-only, and makes no network calls.
+
+# ============================================================================
+# Approach summary
+# ============================================================================
+methodology_summary: |
+  Transparent feature + rule ranker; no LLM calls, embeddings, or GPU at ranking
+  time (all forbidden, and embeddings add nothing here — every non-ML-titled
+  candidate has zero JD-domain evidence in the data). Five stages: (0) parse and
+  derive features; (1) a plausibility gate that forces impossible profiles to
+  tier 0 via numeric inconsistency (skill used longer than the whole career,
+  "expert" with 0 months, a stint outlasting its own dates) — 0 honeypots reach
+  the top 100; (2) a role-fit gate, the decisive trap defense, scoring whether
+  the candidate is actually an AI/ML production engineer from title trajectory ×
+  career ML-ness × production-evidence language, so keyword-stuffers (off-domain
+  title, AI skills listed, non-ML role descriptions) collapse; (3) a weighted
+  composite over explainable dimensions with disqualifier down-weights
+  (dabbler, pure-research, consulting-only, perception-only, title-chaser,
+  big-tech-only); (4) a multiplicative behavioral-availability modifier from the
+  redrob_signals so perfect-on-paper-but-unreachable candidates drop; (5)
+  grounded, non-templated reasoning per candidate. Runs in ~65s / 1.8 GB on CPU
+  for 100K candidates. Weights and rules live in one config file (redrob/rubric.py).
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true                  # tests/selftest.py asserts 0% in top 100
+  reproduction_tested: true
