@@ -1,0 +1,6 @@
+# The ranker uses ONLY the Python standard library — no third-party packages.
+# This keeps Stage-3 reproduction trivial (no install step, no version drift)
+# and guarantees the ranking step makes no network calls.
+#
+# Requires: Python 3.10+ (uses dataclass slots and X | None type unions).
+# Developed and tested on Python 3.11 / 3.13.

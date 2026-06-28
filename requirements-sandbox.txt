@@ -1,0 +1,7 @@
+# Dependencies for the sandbox/demo app (app.py) ONLY.
+# The core ranker (rank.py) needs NONE of these — it is pure standard library.
+streamlit>=1.30
+
+# Optional: only needed if you enable the "LLM-polished explanations" toggle,
+# which is a presentation layer outside the ranking step. Safe to omit.
+# anthropic>=0.40
