@@ -19,8 +19,8 @@ team_members:
 # ============================================================================
 # Code and reproducibility
 # ============================================================================
-github_repo: "TODO-https://github.com/USERNAME/REPO"   # TODO: push the repo and paste URL
-sandbox_link: "TODO-https://huggingface.co/spaces/..."  # TODO: deploy a small-sample runner (see PRD §10)
+github_repo: "https://github.com/TejaswiMahadev/redrob-ai-hiring-agent"
+sandbox_link: "https://huggingface.co/spaces/Tejos/redrob-candidate-ranker"
 
 reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
 
